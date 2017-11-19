@@ -5,9 +5,17 @@ permalink: /the-data/
 ---
 
 <script type="text/javascript">
-$(document).ready(function() {
-    $('#mlab').DataTable();
-} );
+  $(document).ready(function() {
+      $('#mlab').DataTable(
+        {
+          dom: 'Bfrtip',
+          buttons: [
+              'copy', 'excel', 'pdf'
+          ]
+        }
+      );
+
+  } );
 </script>
 <table id="mlab" class="display" cellspacing="0" width="100%">
   <thead>
