@@ -2,18 +2,8 @@
 layout: page
 title: Research
 ---
-# {{ page.title }}
 
-# Is this a heading?
+# Site in Progress!
 
-## What about this?
 
-<a href="http://www.upenn.edu">Who likes HTML?</a>
-
-[put the link here](http://www.upenn.edu)
-
-Your site is real!
-
-I have important things to say.
-
-Or maybe I don't.
+This is an experimental site for use in sharing some early research results from the Monument Lab Research. For now, however, please go to the  [Monument Lab Website](http://monumentlab.muralarts.org) to learn about the project. 
