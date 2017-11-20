@@ -25,6 +25,16 @@ encoding: utf-8
 # Laurie's custom pages
 birthday: December 23
 
+# Collections
+collections:
+  labs:
+    output: true
+    defaults:
+      - scope:
+          path: ""
+          type: labs
+        values:
+          layout: page
 
 # Build settings
 markdown: kramdown

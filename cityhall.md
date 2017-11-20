@@ -1,11 +1,12 @@
 ---
 layout: default
-title: Proposal text
-permalink: /mlab-data/
+title: City Hall
+permalink: /cityhall/
 ---
 
 
 {% for proposal in site.data.mlab2017 %}
+  {% if proposal.lab == "City Hall" %}
   <div>
     <h3><strong>{{ proposal.title }}</strong></h3>
     <h4>{{ proposal.transcription }}</h4>
@@ -14,9 +15,7 @@ permalink: /mlab-data/
     <p><a href="http://monumentlab-research.muralarts.org/resourcespace/plugins/leaflet_rs/pages/direct_view.php?ID={{ proposal.ID }}" target="blank">View Proposal</a> </p>
     <hr />
   </div>
+  {% endif %}
 
-{% endfor %}
 
-{% for lab in site.data.labs %}
-  <h2> {{ lab.name }} </h2>
 {% endfor %}
