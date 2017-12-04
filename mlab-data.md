@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Proposal text
+title: All Proposals
 permalink: /mlab-data/
 ---
 

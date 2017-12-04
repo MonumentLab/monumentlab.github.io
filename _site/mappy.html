@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Mappy</title>
+  <meta name="description" content="">
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="http://localhost:4000/mappy">
+  <link rel="alternate" type="application/rss+xml" title="Monument Lab Research" href="/feed.xml">
+  
+  
+</head>
+
+  
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin=""></script>
+
+
+	<style>
+		html, body {
+			height: 100%;
+			margin: 0;
+		}
+		#map {
+			width: 600px;
+			height: 400px;
+		}
+	</style>
+
+  <body>
+
+    <header class="site-header" role="banner">
+
+  <div class="wrapper">
+    
+    
+    <a class="site-title" href="/">Monument Lab Research</a>
+
+    
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+              <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+              <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger">
+          
+            
+            
+            <a class="page-link" href="/about.html">About</a>
+            
+          
+            
+            
+            <a class="page-link" href="/cityhall/">City Hall</a>
+            
+          
+            
+            
+            <a class="page-link" href="/">Research</a>
+            
+          
+            
+            
+          
+            
+            
+            <a class="page-link" href="/mapit">Mapit</a>
+            
+          
+            
+            
+            <a class="page-link" href="/mappy">Mappy</a>
+            
+          
+            
+            
+            <a class="page-link" href="/mlab-data/">All Proposals</a>
+            
+          
+            
+            
+            <a class="page-link" href="/the-data/">More data</a>
+            
+          
+            
+            
+            <a class="page-link" href="/passyunk/">passyunk</a>
+            
+          
+            
+            
+          
+        </div>
+      </nav>
+    
+  </div>
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <div id ="home_leaflet_rs_container">
+    <div id="map_container" class="w3-content w3-mobile">
+        <div id="leaflet_rs_map"></div>
+    </div>
+
+    <!-- This div is where selectors and buttons go if not on the map -->
+    <div class="w3-row" style="width = 100%">
+        <div id="selector_container" class="w3-center w3-mobile">
+            <div id="selectorDiv"></div>
+        </div>
+    </div>
+</div>
+
+    <!--GEOCODER LIBRARIES-->
+    <script src="https://unpkg.com/esri-leaflet@2.0.8"></script>
+    <link rel="stylesheet" href="https://unpkg.com/esri-leaflet-geocoder@2.2.4/dist/esri-leaflet-geocoder.css">
+    <script src="https://unpkg.com/esri-leaflet-geocoder@2.2.4"></script>
+
+    <script>
+    //--------------------------------MAP---------------------------------------
+    var map = L.map('leaflet_rs_map');
+
+    //------------------------------LAYERS--------------------------------------
+    //streets layer
+    var tileLayer =  L.tileLayer('//{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+        subdomains: 'abcd',
+        maxZoom: 19
+    }).addTo(map);
+
+    //neighborhoods layer
+    var neighborhoodsStyle = {"color": "#ff6a39", "opacity": 0.8, "fillOpacity": 0.45, "weight": 1};
+    var neighborhoodsLayer = L.geoJson(neighborhoods, {style: neighborhoodsStyle}).addTo(map);
+    map.fitBounds(neighborhoodsLayer.getBounds(), {padding: [10, 10]});
+    //remove the neighborhoods layer when the user zooms in past a certain point
+    map.on('zoomend', function() {
+        if (map.getZoom() > 14){
+            if (map.hasLayer(neighborhoodsLayer)) {
+                map.removeLayer(neighborhoodsLayer);
+            }
+        }
+        if (map.getZoom() <= 14){
+            if (map.hasLayer(neighborhoodsLayer)){
+            //   console.log("layer already added");
+            }
+            else {
+                neighborhoodsLayer.addTo(map);
+                neighborhoodsLayer.bringToBack();
+            }
+        }
+    });
+
+    //creates a layer group of the neighborhoods layer and monument points
+    //used by the selectors to remove and redraw points
+    var group = new L.LayerGroup(jsonLyr, neighborhoodsLayer);
+    map.addLayer(group);
+
+    //----------------------------MONUMENTS-------------------------------------
+    //get monument points from geojson array
+    // var monumentsStyle = {"color": "#ff6a39", "opacity": 0.8, "weight": 1};
+    // var monumentsLayer = L.geoJson(monuments, {style: monumentsStyle}).addTo(map);
+    // map.fitBounds(neighborhoodsLayer.getBounds(), {padding: [10, 10]});
+    //remove the neighborhoods layer when the user zooms in past a certain point
+
+    var jsonPts = L.geoJson(proposals);
+    console.log(jsonPts);
+    //format markers
+    var geojsonMarkerOptions = {
+        radius: 4,
+        fillColor: "#77C5D5",
+        color: "#737373",
+        weight: 1,
+        fillOpacity: 1
+    };
+
+    var geojsonMarkerOptions2 = {
+        radius: 3,
+        fillColor: "#0B5818",
+        color: "#737373",
+        weight: 1,
+        fillOpacity: 1
+    };
+
+    var currentdate = new Date();
+    var twoHours = 2 * 60 * 60 * 1000;
+    var twoHoursAgo = new Date(currentdate.getTime() - twoHours)
+    var twentyfourHours = 24 * 60 * 60 * 1000;
+    var twentyfourHoursAgo = new Date(currentdate.getTime() - twentyfourHours)
+    var oneWeek = 168 * 60 * 60 * 1000;
+    var oneWeekAgo = new Date(currentdate.getTime() - oneWeek)
+    var testDate = new Date("September 16, 2017 9:13:00");
+
+    //Create clustered and unclustered markers
+    var markers = new L.markerClusterGroup({showCoverageOnHover: true});
+    var selectedMarkers = new L.markerClusterGroup();
+    var unclusteredMarkers = new L.featureGroup();
+    var selectedUnclusteredMarkers = new L.FeatureGroup();
+
+
+    //adds momuments to map
+    var jsonLyr = L.geoJson(jsonPts, {
+        onEachFeature: onEachFeature
+        , pointToLayer: function (feature, latlng) {
+          //this is the date format needed for Safari
+          var dateCreated = new Date(feature.properties.creationDate.replace(/\s/, 'T'));
+          //style markers by date
+          if (dateCreated > oneWeekAgo) {
+            var marker = L.circleMarker(latlng, geojsonMarkerOptions);
+          }
+          if (dateCreated < oneWeekAgo) {
+            var marker = L.circleMarker(latlng, geojsonMarkerOptions2);
+          }
+        return marker;
+        }
+    });
+    markers.addLayer(jsonLyr);
+	markers.addTo(map);
+    unclusteredMarkers.addLayer(jsonLyr);
+
+
+    //true if marker clusters is selected from the toggle (default)
+    var clustersOn = true;
+
+
+
+    //------------------------------POP-UPS-------------------------------------
+    function onEachFeature(feature, layer) {
+        var html = "<a href='../plugins/leaflet_rs/pages/direct_view.php?ID=" + feature.properties.researchID +
+            "'><img src='../filestore/" + feature.properties.path.substring(44) + "'" + "&size=thm' width=100 height=80 ></a>";
+        var agePopup = "", zipcodePopup = "", socialMediaPopup = "";
+        if (feature.properties && feature.properties.name && feature.properties.ref) {
+            if (feature.properties.age){
+                var agePopup =  "<b>"+"AGE: "+"</b>" + feature.properties.age + "<br/>";
+            }
+            if (feature.properties.topicArray) {
+                var topic = feature.properties.topicArray + "<br/";
+            }
+            if (feature.properties.typeArray) {
+                var type = feature.properties.typeArray + "<br/";
+            }
+            if (feature.properties.zipcode){
+                var zipcodePopup =  "<b>"+"ZIPCODE: "+"</b>" + feature.properties.zipcode + "<br/>";
+            }
+            if (feature.properties.twitter) {
+                socialMediaPopup = socialMediaPopup + "<a href='https://twitter.com/" + feature.properties.twitter +
+                "'><img class='social_icon' src ='../plugins/leaflet_rs/assets/Twitter_Social_Icon_Circle_White.png'></a>";
+            }
+            if (feature.properties.instagram) {
+                socialMediaPopup = socialMediaPopup + "<a href='https://www.instagram.com/" + feature.properties.instagram +
+                "'><img class='social_icon' src ='../plugins/leaflet_rs/assets/white_glyph-logo_May2016.png'></a>";
+            }
+            if (feature.properties.facebook) {
+                socialMediaPopup = socialMediaPopup + "<a href='https://facebook.com/" + feature.properties.facebook +
+                "'><img class='social_icon' src ='../plugins/leaflet_rs/assets/FB-f-Logo__white_29.png'></a>";
+            }
+            layer.bindPopup("<span style='font-family:sans-serif; font-size: 14px; letter-spacing:1px'><b>TITLE: </b>" + feature.properties.name + "<br />" +
+                 type + topic + agePopup + zipcodePopup + "</span>" + "<br />" + html + "<br />"  + socialMediaPopup + "<br />", {autoClose: false});
+
+            //mouseover popups with momument title
+            layer.on('mouseover', function(e) {
+                //open popup;
+                var popup = L.popup()
+                .setLatLng(e.latlng)
+                .setContent("<div style = 'font-family:sans-serif; letter-spacing:1px; font-weight:bold';>" + feature.properties.name + "</div>")
+                .openOn(map);
+            });
+        }
+    };
+
+//-------------------------------------LEGEND-----------------------------------
+
+    var legend = L.control({position: 'topleft'});
+
+    legend.onAdd = function (map) {
+      var legendDiv = L.DomUtil.create('div', 'legend');
+      legendDiv.innerHTML += "<span id = 'legendTitle'>Legend</span><br/>";
+      legendDiv.innerHTML += "<div style = 'margin:8px'><div id = 'legendCircle1'></div>     Recently added</div>";
+      legendDiv.innerHTML += "<div style = 'margin:8px'><div id = 'legendCircle2'></div>     Earlier submissions</div>";
+      return legendDiv;
+      }
+    legend.addTo(map);
+
+    //----------------------------GEOCODER--------------------------------------
+    //restrict geocoder searchBounds to the greater Philadelphia area
+    var corner1 = L.latLng(40.11194, -75.30556);
+    var corner2 = L.latLng(39.84556, -74.95556);
+    var markerOptions = {
+      color: "#737373"
+    };
+    bounds = L.latLngBounds(corner1, corner2);
+    var geoOptions = {title: "Search Location", position: 'bottomright', searchBounds: bounds, expanded:true, collapseAfterResult: false};
+    var searchControl = L.esri.Geocoding.geosearch(geoOptions).addTo(map);
+    var results = L.layerGroup().addTo(map);
+
+    //listen for the results event and add every result to the map
+    searchControl.on("results", function(data) {
+        results.clearLayers();
+        for (var i = data.results.length - 1; i >= 0; i--) {
+           results.addLayer(L.marker(data.results[0].latlng, markerOptions));
+        }
+    });
+
+    //Remove geocoder results if the user clicks elsewhere
+    L.DomEvent.addListener(map, 'click', function(e) {
+        results.clearLayers();
+    });
+
+    //-------------------------SHOW ALL BUTTON----------------------------------
+    var allSelector = L.control();
+    allSelector.onAdd = function(map) {
+        //create div container
+        var div = L.DomUtil.create('div', 'mySelector4');
+        //create select element within container (with id, so it can be populated later
+        div.innerHTML = '<input class="w3-button w3-large w3-round" type="button" id="showAll" value="Show all" onClick="showAll();"/></div>';
+        return div;
+    };
+    allSelector.addTo(map);
+
+    function showAll(){
+        if (clustersOn == true) {
+          map.removeLayer(selectedMarkers);
+          markers.addTo(map);
+        }
+        if (clustersOn == false) {
+          map.removeLayer(selectedUnclusteredMarkers);
+          unclusteredMarkers.addTo(map);
+        }
+
+        map.fitBounds(neighborhoodsLayer.getBounds(), {padding: [10, 10]});
+        //reset dropdown to default text
+        var dropdowns = document.querySelectorAll(".selector")
+        for (var i = 0; i < dropdowns.length; i++) {
+            dropdowns[i].selectedIndex = 0;
+        }
+    };
+
+//----------------------------MARKER CLUSTER TOGGLE--------------------------
+  //Create and populate the div to toggle marker clusters on and off
+    var toggleDiv = L.DomUtil.create('div', 'toggleDiv');
+    var toggle = L.control();
+    toggle.onAdd = function(map) {
+      toggleDiv.innerHTML = "'<div id = 'toggle'>" +
+                "<div class='layerText'>Show clusters</div>" +
+                "<label class='switch' style = 'vertical-align:middle'>" +
+                  "<input type='checkbox'>" +
+                  "<span id = 'toggleLayers' class='slider'>" +
+                  "</span>" +
+                "</label>" +
+                "<div class='layerText' style = 'margin-left:4px' >Show points</div>"+
+              "</div>" +
+              "</div>";
+      return toggleDiv;
+      alert("returned");
+
+    }
+    toggle.addTo(map);
+
+    //when the toggle is clicked, toggle the clusters
+    var toggleLayers = document.getElementById("toggleLayers");
+    L.DomEvent.addListener(toggleLayers, 'click', function(e) {
+      if (clustersOn == true) {
+        map.removeLayer(markers);
+        unclusteredMarkers.addTo(map);
+        clustersOn = false;
+        //if points are selected and the cluster toggle is changed, redo the selection
+        //with the new clustering option
+       if (document.querySelector("#location_select").selectedIndex != 0) {
+          map.removeLayer(selectedMarkers);
+          changeHandler();
+        }
+        if (document.querySelector("#zip_select").selectedIndex != 0) {
+           map.removeLayer(selectedMarkers);
+           changeHandler2();
+         }
+       /* if (document.querySelector("#type_select").selectedIndex != 0) {
+          map.removeLayer(selectedMarkers);
+          changeHandler3();
+        }
+        if (document.querySelector("#key_select").selectedIndex != 0) {
+          map.removeLayer(selectedMarkers);
+          changeHandler4();
+        } */
+        return;
+      }
+
+      if (clustersOn == false) {
+        map.removeLayer(unclusteredMarkers);
+        markers.addTo(map);
+        clustersOn = true;
+        //if points are selected and the cluster toggle is changed, redo the selection
+        //with the new clustering option
+        if (document.querySelector("#location_select").selectedIndex != 0) {
+          map.removeLayer(selectedUnclusteredMarkers)
+          changeHandler();
+        }
+        if (document.querySelector("#zip_select").selectedIndex != 0) {
+          map.removeLayer(selectedUnclusteredMarkers)
+          changeHandler2();
+        }
+        /*if (document.querySelector("#type_select").selectedIndex != 0) {
+          map.removeLayer(selectedUnclusteredMarkers)
+          changeHandler3();
+        }
+        if (document.querySelector("#key_select").selectedIndex != 0) {
+          map.removeLayer(selectedUnclusteredMarkers)
+          changeHandler4();
+        }*/
+        return;
+      }
+    });
+
+    //-------------------FUNCTION FOR POPULATING SELECTORS----------------------
+    function isInArray(value, array) {
+        return array.indexOf(value) > -1;
+    }
+
+    //--------------------------TITLE SELECTOR----------------------------------
+    //create selector that will populate dynamically
+/*  var titleSelector = L.control({position: 'bottomright'});
+    titleSelector.onAdd = function(map) {
+        //create div container
+        var div = L.DomUtil.create('div', 'mySelector');
+        //create select element within container (with id, so it can be populated later
+        div.innerHTML = '<select id="name_select" class="selector"><option value="init">(select by title)</option></select>';
+        return div;
+    };
+    titleSelector.addTo(map);
+
+    //make list of titles
+    var titleList = [];
+    jsonLyr.eachLayer(function(layer) {
+        titleList.push(layer.feature.properties.uppercaseName);
+    });
+    //sort dropdown list
+    sortedTitles = titleList.sort();
+    //put list in selector dropdown
+    function capitalizeFirstLetter(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+    for (var i = 0; i < sortedTitles.length; i++) {
+        var optionElement = document.createElement("option");
+        var capitalizeFirst = capitalizeFirstLetter(sortedTitles[i]);
+        optionElement.innerHTML = capitalizeFirst;
+        L.DomUtil.get("name_select").appendChild(optionElement);
+    }
+    var name_select = L.DomUtil.get("name_select");
+    //prevent clicks on the selector from propagating through to the map
+    //without this popups close immediately after opening
+    L.DomEvent.addListener(name_select, 'click', function(e) {
+        L.DomEvent.stopPropagation(e);
+    });
+    //listen for user to select item from the dropdown
+    L.DomEvent.addListener(name_select, 'change', changeHandler);
+    //when a name is selected, open that monument's popup
+    function changeHandler(e) {
+        searchPoints("name_select", "layer.feature.properties.uppercaseName");
+        document.querySelector("#zip_select").selectedIndex = 0;
+        document.querySelector("#key_select").selectedIndex = 0;
+    }
+*/
+
+//---------------------------LAB LOCATION SELECTOR---------------------------
+
+    var locationSelector = L.control({position: 'bottomright'});
+    //put selector on map
+    locationSelector.onAdd = function(map) {
+        var locationDiv = L.DomUtil.create('div', 'locationSelectorDiv');
+        locationDiv.innerHTML = '<select id="location_select" class="selector"><option value="init">Select by Lab Location</option></select>';
+        return locationDiv;
+    };
+
+    locationSelector.addTo(map);
+    //Put the selector in a new div that is outside the map and beside the other search otpions
+    //Comment this out to put the selector back on the map
+    var selectorDiv = document.getElementById('selectorDiv');
+    var locationSelect = document.getElementById('location_select');
+    selectorDiv.appendChild(locationSelect);
+
+    var locationList = [];
+    jsonLyr.eachLayer(function(layer) {
+        if (layer.feature.properties.labLocation) {
+          //if the name is already in the list, don't add it
+          if (isInArray(layer.feature.properties.labLocation, locationList) == true) {
+              return;
+          }
+          else {
+              locationList.push(layer.feature.properties.labLocation);
+          }
+      }
+    });
+
+    var sortedLocationList = locationList.sort();
+    //add the items in the sorted list into the selector
+    for (var i = 0; i < sortedLocationList.length; i++) {
+        var optionElement = document.createElement("option");
+        optionElement.innerHTML = sortedLocationList[i];
+        locationSelect.appendChild(optionElement);
+    }
+
+    var location_select = L.DomUtil.get("location_select");
+    //prevent clicks on the selector from propagating through to the map
+    L.DomEvent.addListener(location_select, 'click', function(e) {
+        L.DomEvent.stopPropagation(e);
+    });
+    //listen for user to select item from the dropdown
+    L.DomEvent.addListener(location_select, 'change', changeHandler);
+
+    function changeHandler() {
+      searchPoints('location_select', 'layer.feature.properties.labLocation');
+      //document.querySelector("#key_select").selectedIndex = 0;
+      //document.querySelector("#type_select").selectedIndex = 0;
+      document.querySelector("#zip_select").selectedIndex = 0;
+    }
+    //-------------------------ZIPCODE SELECTOR---------------------------------
+    //create selector by zip code
+  var zipcodeSelector = L.control({position: 'bottomright'});
+    zipcodeSelector.onAdd = function(map) {
+        //create div container
+        var div2 = L.DomUtil.create('div', 'mySelector2');
+        //create select element within container (with id, so it can be populated later
+        div2.innerHTML = '<select id="zip_select" class="selector"><option value="init">Select by Zipcode of Creator</option></select>';
+        return div2;
+    };
+
+    zipcodeSelector.addTo(map);
+    //Put the selector in a new div that is outside the map and beside the other search otpions
+        //Comment this out to put the selector back on the map
+
+    var zipSelect = document.getElementById('zip_select');
+    selectorDiv.appendChild(zipSelect);
+
+    //add each name to a list
+    var myZipList = [];
+    jsonLyr.eachLayer(function(layer) {
+        //if the name is already in the list, don't add it
+        if (isInArray(layer.feature.properties.zipcode, myZipList) == true) {
+            return;
+        }
+        else {
+            myZipList.push(layer.feature.properties.zipcode);
+        }
+    });
+    //check to see if the item is already in the list
+
+
+    var sortedZipList = myZipList.sort();
+    //add the items in the sorted list into the selector
+    for (var i = 0; i < sortedZipList.length; i++) {
+        var optionElement = document.createElement("option");
+        optionElement.innerHTML = sortedZipList[i];
+        L.DomUtil.get("zip_select").appendChild(optionElement);
+    }
+    var zip_select = L.DomUtil.get("zip_select");
+    //prevent clicks on the selector from propagating through to the map
+    L.DomEvent.addListener(zip_select, 'click', function(e) {
+        L.DomEvent.stopPropagation(e);
+    });
+    //listen for user to select item from the dropdown
+    L.DomEvent.addListener(zip_select, 'change', changeHandler2);
+    //when a zipcode is selected, remove all other points
+    function changeHandler2() {
+      searchPoints("zip_select", 'layer.feature.properties.zipcode');
+      //document.querySelector("#name_select").selectedIndex = 0;
+      //document.querySelector("#key_select").selectedIndex = 0;
+      document.querySelector("#location_select").selectedIndex = 0;
+
+    }
+
+// //------------------------------TYPE SELECTOR--------------------------------
+//
+//     var typeSelector = L.control({position: 'bottomright'});
+//     //put selector on map
+//     typeSelector.onAdd = function(map) {
+//         var typeDiv = L.DomUtil.create('div', 'mySelector4');
+//         typeDiv.innerHTML = '<select id="type_select" class="selector"><option value="init">Select by Type</option></select>';
+//         return typeDiv;
+//     };
+//
+//     typeSelector.addTo(map);
+//     //Put the selector in a new div that is outside the map and beside the other search otpions
+//     //Comment this out to put the selector back on the map
+//
+//     var typeSelect = document.getElementById('type_select');
+//     selectorDiv.appendChild(typeSelect);
+//
+//     //populate dropdown
+//     var typeList = [];
+//     jsonLyr.eachLayer(function(layer) {
+//         for (var i = 0; i < layer.feature.properties.typeArray.length; i++){
+//             var word = layer.feature.properties.typeArray[i];
+//             if (word && isInArray(word, typeList) == false && isInArray(word, ["Mapped", "Unprocessed", "Transcribed"]) ==false ) {
+//                 typeList.push(word);
+//             }
+//         }
+//     });
+//     sortedTypeList = typeList.sort();
+//     for (var i = 0; i < sortedTypeList.length; i++) {
+//         var optionElement = document.createElement("option");
+//         optionElement.innerHTML = sortedTypeList[i];
+//         L.DomUtil.get("type_select").appendChild(optionElement);
+//     }
+//
+//     var type_select = L.DomUtil.get("type_select");
+//     //call function on change
+//     L.DomEvent.addListener(type_select, 'change', changeHandler2);
+//     function changeHandler2() {
+//         selectKeywords('type_select', 'layer.feature.properties.typeArray');
+//         document.querySelector("#location_select").selectedIndex = 0;
+//         document.querySelector("#key_select").selectedIndex = 0;
+//     }
+//
+//     //-------------------------TOPIC SELECTOR---------------------------------
+//     var keywordSelector = L.control({position: 'bottomright'});
+//     //put keyword selector on map
+//     keywordSelector.onAdd = function(map) {
+//         var div = L.DomUtil.create('div', 'mySelector3');
+//         div.innerHTML = '<select id="key_select" class="selector"><option value="init">Select by Topic</option></select>';
+//         return div;
+//     };
+//
+//     keywordSelector.addTo(map);
+//     //Put the selector in a new div that is outside the map and beside the other search otpions
+//     //Comment this out to put the selector back on the map
+//     var keySelect = document.getElementById('key_select');
+//     selectorDiv.appendChild(keySelect);
+//
+//     //populate dropdown
+//     var keywordList = [];
+//     jsonLyr.eachLayer(function(layer) {
+//         for (var i = 0; i < layer.feature.properties.topicArray.length; i++){
+//             var word = layer.feature.properties.topicArray[i];
+//             if (word && isInArray(word, keywordList) == false && isInArray(word, ["Mapped", "Unprocessed", "Transcribed"]) ==false ) {
+//                 keywordList.push(word);
+//             }
+//         }
+//     });
+//     sortedKeywordList = keywordList.sort();
+//     for (var i = 0; i < sortedKeywordList.length; i++) {
+//         var optionElement = document.createElement("option");
+//         optionElement.innerHTML = sortedKeywordList[i];
+//         L.DomUtil.get("key_select").appendChild(optionElement);
+//     }
+//     var key_select = L.DomUtil.get("key_select");
+//     //call function on click
+//     L.DomEvent.addListener(key_select, 'change', changeHandler3);
+//     function changeHandler3() {
+//         selectKeywords('key_select','layer.feature.properties.topicArray');
+//         document.querySelector("#location_select").selectedIndex = 0;
+//         document.querySelector("#type_select").selectedIndex = 0;
+//     }
+
+    //----------FUNCTIONS EXECUTED ON SELECTOR DROPDOWN CLICKS------------------
+    var pointsLayer = new L.FeatureGroup(); //selected points
+
+    function selectKeywords(elementID, property) {
+        var keyword = document.getElementById(elementID).value;
+        var jsonLyr2 = jsonLyr;
+        map.removeLayer(jsonLyr);
+        if (clustersOn == true) {
+          map.removeLayer(markers);
+          selectedMarkers.clearLayers();
+        }
+        if (clustersOn == false) {
+          map.removeLayer(unclusteredMarkers);
+          selectedUnclusteredMarkers.clearLayers();
+        }
+        pointsLayer.clearLayers();
+        map.removeLayer(group);
+        jsonLyr2.eachLayer(function(layer) {
+          var property2 = eval(property);
+        if (isInArray(keyword, property2) == true) {
+            map.removeLayer(jsonLyr);
+            pointsLayer.addLayer(layer);
+            if (clustersOn == true) {
+              selectedMarkers.addLayer(pointsLayer);
+              map.fitBounds(neighborhoodsLayer.getBounds(), {padding: [10, 10]});
+              map.addLayer(selectedMarkers);
+            }
+            if (clustersOn == false) {
+              selectedUnclusteredMarkers.addLayer(pointsLayer);
+              map.fitBounds(neighborhoodsLayer.getBounds(), {padding: [10, 10]});
+              map.addLayer(selectedUnclusteredMarkers);
+            }
+          }
+        });
+    }
+
+    function searchPoints(elementID, property) {
+        var jsonLyr2 = jsonLyr;
+        var criteria = document.getElementById(elementID).value;
+        map.removeLayer(jsonLyr);
+        if (clustersOn == true) {
+          map.removeLayer(markers);
+          selectedMarkers.clearLayers();
+        }
+        if (clustersOn == false) {
+          map.removeLayer(unclusteredMarkers);
+          selectedUnclusteredMarkers.clearLayers();
+        }
+        pointsLayer.clearLayers();
+        map.removeLayer(group);
+        jsonLyr2.eachLayer(function(layer) {
+            property2 = eval(property);
+            if (property2 === criteria) {
+                map.removeLayer(jsonLyr);
+                pointsLayer.addLayer(layer);
+                if (clustersOn == true) {
+                  selectedMarkers.addLayer(pointsLayer);
+                  map.fitBounds(neighborhoodsLayer.getBounds(), {padding: [10, 10]});
+                  map.addLayer(selectedMarkers);
+                }
+                if (clustersOn == false) {
+                  selectedUnclusteredMarkers.addLayer(pointsLayer);
+                  map.fitBounds(neighborhoodsLayer.getBounds(), {padding: [10, 10]});
+                  map.addLayer(selectedUnclusteredMarkers);
+                }
+
+            }
+       });
+    };
+    </script>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Monument Lab Research</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>
+            
+              Monument Lab Research
+            
+            </li>
+            
+            <li><a href="mailto:laallen@upenn.edu">laallen@upenn.edu</a></li>
+            
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/librlaurie"><span class="icon icon--github"><svg viewBox="0 0 16 16" width="16px" height="16px"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">librlaurie</span></a>
+
+          </li>
+          
+
+          
+          <li>
+            <a href="https://twitter.com/librlaurie"><span class="icon icon--twitter"><svg viewBox="0 0 16 16" width="16px" height="16px"><path fill="#828282" d="M15.969,3.058c-0.586,0.26-1.217,0.436-1.878,0.515c0.675-0.405,1.194-1.045,1.438-1.809c-0.632,0.375-1.332,0.647-2.076,0.793c-0.596-0.636-1.446-1.033-2.387-1.033c-1.806,0-3.27,1.464-3.27,3.27 c0,0.256,0.029,0.506,0.085,0.745C5.163,5.404,2.753,4.102,1.14,2.124C0.859,2.607,0.698,3.168,0.698,3.767 c0,1.134,0.577,2.135,1.455,2.722C1.616,6.472,1.112,6.325,0.671,6.08c0,0.014,0,0.027,0,0.041c0,1.584,1.127,2.906,2.623,3.206 C3.02,9.402,2.731,9.442,2.433,9.442c-0.211,0-0.416-0.021-0.615-0.059c0.416,1.299,1.624,2.245,3.055,2.271 c-1.119,0.877-2.529,1.4-4.061,1.4c-0.264,0-0.524-0.015-0.78-0.046c1.447,0.928,3.166,1.469,5.013,1.469 c6.015,0,9.304-4.983,9.304-9.304c0-0.142-0.003-0.283-0.009-0.423C14.976,4.29,15.531,3.714,15.969,3.058z"/></svg>
+</span><span class="username">librlaurie</span></a>
+
+          </li>
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
