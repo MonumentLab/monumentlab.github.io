@@ -19,24 +19,6 @@ permalink: /mapit
 		id: 'mapbox.light'
 	}).addTo(map);
 
-	var baseballIcon = L.icon({
-		iconUrl: 'baseball-marker.png',
-		iconSize: [32, 37],
-		iconAnchor: [16, 37],
-		popupAnchor: [0, -28]
-	});
-
-	function onEachFeature(feature, layer) {
-		var popupContent = "<p>I started out as a GeoJSON " +
-				feature.geometry.type + ", but now I'm a Leaflet vector!</p>";
-
-		if (feature.properties && feature.properties.popupContent) {
-			popupContent += feature.properties.popupContent;
-		}
-
-		layer.bindPopup(popupContent);
-	}
-
   //neighborhoods layer
   var neighborhoodsStyle = {"color": "#ff6a39", "opacity": 0.8, "fillOpacity": 0.45, "weight": 1};
   var neighborhoodsLayer = L.geoJson(neighborhoods, {style: neighborhoodsStyle}).addTo(map);
@@ -126,30 +108,5 @@ permalink: /mapit
           });
       }
   };
-
-
-
-
-	// L.geoJSON(freeBus, {
-  //
-	// 	filter: function (feature, layer) {
-	// 		if (feature.properties) {
-	// 			// If the property "underConstruction" exists and is true, return false (don't render features under construction)
-	// 			return feature.properties.underConstruction !== undefined ? !feature.properties.underConstruction : true;
-	// 		}
-	// 		return false;
-	// 	},
-  //
-	// 	onEachFeature: onEachFeature
-	// }).addTo(map);
-  //
-	// var coorsLayer = L.geoJSON(coorsField, {
-  //
-	// 	pointToLayer: function (feature, latlng) {
-	// 		return L.marker(latlng, {icon: baseballIcon});
-	// 	},
-  //
-	// 	onEachFeature: onEachFeature
-	// }).addTo(map);
 
 </script>
