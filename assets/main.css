@@ -151,6 +151,21 @@ pre {
 .social-media-list li + li {
   padding-top: 5px; }
 
+  /**
+   * Lab Callouts
+   */
+.lab-callout {
+  background-color: #FD6A42;
+  padding-right: 5%;
+  padding-left: 5%;
+  border-color: 000000;
+  border-width: 4px;
+
+}
+
+
+
+
 /**
  * Site header
  */

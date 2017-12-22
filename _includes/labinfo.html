@@ -1,10 +1,11 @@
 
-
+<div class="lab-callout">
 <h2>{{ page.lab.name }}</h2>
-<h3>Location:{{ page.lab.where }}</h3>
-<h3>Open:{{ page.lab.when }}</h3>
-<h3>Lab Managers:{{ page.lab.managers }}</h3>
-<h3>Fellows:{{ page.lab.where }}</h3>
+<h3>Location: {{ page.lab.where }}</h3>
+<h3>Open: {{ page.lab.when }}</h3>
+<h3>Lab Managers: {{ page.lab.managers }}</h3>
+<h3>Fellows: {{ page.lab.where }}</h3>
+</div>
 
 {% for proposal in site.data.mlab2017 %}
 	{% if proposal.lab == page.lab.name %}
