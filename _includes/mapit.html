@@ -1,15 +1,49 @@
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin=""/>
 <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin=""></script>
+<!-- For mappy -->
+
+<!--ESRI LEAFLET LIBRARIES-->
+	<!-- <link rel="stylesheet" href="https://unpkg.com/esri-leaflet-geocoder@2.2.4/dist/esri-leaflet-geocoder.css">
+	<script src="https://unpkg.com/esri-leaflet@2.0.8"></script>
+	<script src="https://unpkg.com/esri-leaflet-geocoder@2.2.4"></script> -->
 
 
+<!-- MARKER CLUSTER LIBRARIES -->
+	<!-- <script src="assets/js/leaflet.markercluster-src.js"></script>
+	<link rel="stylesheet" href="assets/css/MarkerCluster.css"> -->
+
+ <!--GEOCODER LIBRARIES-->
+   <!-- <script src="https://unpkg.com/esri-leaflet@2.0.8"></script>
+   <link rel="stylesheet" href="https://unpkg.com/esri-leaflet-geocoder@2.2.4/dist/esri-leaflet-geocoder.css">
+   <script src="https://unpkg.com/esri-leaflet-geocoder@2.2.4"></script> -->
+
+
+<!--W3 STYLEHEET -->
+	<!-- <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+	<link rel="stylesheet" href="assets/css/resourcespace.css"> -->
+
+<!-- End mappy -->
 	<style>
 		html, body {
-			height: 100%;
+			height: 60%;
 			margin: 0;
 		}
 		#map {
 			width: 700px;
 			height: 600px;
+		}
+	 /* .info { padding: 6px 8px; font: 14px/16px Arial, Helvetica, sans-serif; background: white; background: rgba(255,255,255,0.8); box-shadow: 0 0 15px rgba(0,0,0,0.2); border-radius: 5px; } .info h4 { margin: 0 0 5px; color: #777; } */
+   .legend { text-align: left; line-height: 18px; color: #555; } .legend i { width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7; }
+	  #infobox {
+    width: 100%;
+    height: 40%;
+    margin-top: 10px;
+    background-color: #C9C7FA;
+    border: 1px solid red;
+		}
+		.info {
+    padding: 6px 8px;
+    background-color: #C9C7FA;
 		}
 	</style>
