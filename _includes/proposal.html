@@ -1,0 +1,13 @@
+<div>
+  <h2><strong>{{ proposal.title }}</strong></h2>
+  <h4>{{ proposal.transcription }}</h4>
+  {% if proposal.credit %}<h4> By: {{ proposal.credit }} </h4>{% endif %}
+  {% if proposal.zipcode %}<h4>zip: {{ proposal.zipcode }}</h4>{% endif %}
+  {% if proposal.age %}<h4> age: {{ proposal.age }}  </h4>{% endif %}
+  {% if proposal.type %}<h4> type: {{ proposal.type }} </h4>{% endif %}
+  {% if proposal.topic %}<h4> topic: {{ proposal.topic }}  </h4>{% endif %}
+  {% if proposal.age %}<h4> age: {{ proposal.age }}  </h4>{% endif %}
+
+  <p><a href="http://monumentlab-research.muralarts.org/resourcespace/plugins/leaflet_rs/pages/direct_view.php?ID={{ proposal.pid }}" target="blank">View Proposal</a> </p>
+  <hr />
+</div>
