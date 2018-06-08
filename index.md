@@ -5,7 +5,7 @@ title: Research
 
 # Site in Progress!
 
-This is an experimental site for use in sharing some early research results from the Monument Lab Research. For now, however, **please go to the  [Monument Lab Website](http://monumentlab.muralarts.org) to learn about the project.**
+This is an experimental site for use in sharing some early research results from the Monument Lab Research. For now, however, **please go to the  [Monument Lab Website](http://monumentlab.muralarts.org) to learn about the project.** Scroll through [proposal galleries](http://monumentlab.com/proposals-galleries) here. 
 
 
 ## Hello HILT
@@ -27,5 +27,6 @@ The playlist for [360 videos is here](https://www.youtube.com/playlist?list=PLTm
 
 ## Random Pages
 
+  - [notes page](/random/)
   - [19147](/passyunk/)
   - [Exportable table](/mlab-data)
