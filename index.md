@@ -11,7 +11,6 @@ This is an experimental site for use in sharing some early research results from
 ## Hello HILT
 The playlist for [360 videos is here](https://www.youtube.com/playlist?list=PLTmn5Ex49hQcwJT2uavcHU263Xj3UFvMc). Stop and start the videos as we walk around the city. 
 
-[View All Proposals](http://monumentlab.github.io/mlab-data.html)
 
 ## Proposals by Lab
 
